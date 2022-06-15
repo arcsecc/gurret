@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ "$#" -lt 1 ]; then
+    echo "Usage: ./plot {thing}"
+    echo "thing: metadata"
+    exit
+fi
+echo $2
+
+case $1 in
+metadata)
+    ./draw_programs/metadata_iter.py "" "Number of runs" "time (seconds)" "results/metadata" "$2"
+;;
+
+exec)
+    ./draw_programs/metadata_iter.py "" "Number of runs" "time (seconds)" "results/execute" "$2"
+;;
+
+fuse)
+    ./draw_programs/fuse.py "" "File size: power of 2 MB" "time (seconds)" "results/fuse"
+;;
+
+rw)
+    ./draw_programs/barplot.py "" "File size: power of 2 MB" "time (seconds)" "results/rw"
+;;
+
+rw2)
+    ./draw_programs/barplot2.py "" "File size in MB" "time (seconds)" "results/rw2"
+;;
+
+ea)
+    ./draw_programs/ea.py "" "EA size, power of 2" "time (seconds)" "results/ea"
+;;
+
+ifc)
+    ./draw_programs/ifc.py "" "Number of subscriptions" "time (seconds)" "results/ifc"
+;;
+
+*)
+    echo "unknown"
+    ;;
+esac

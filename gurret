@@ -1,0 +1,21 @@
+#!/bin/bash
+
+ERROR=""
+
+function _mount () {
+    MOUNT=$(cat config | grep PATH | cut -c 6-)
+    sudo fusermount -u $MOUNT
+
+    cargo b --bin main
+    if [ $? -ne 0 ]; then
+        exit 0
+        return
+    fi
+    sudo -E env "PATH=$PATH" ./target/debug/main
+}
+
+if [ "$1" = "mount" ]; then
+    _mount 
+    echo $ERROR
+    exit 0
+fi

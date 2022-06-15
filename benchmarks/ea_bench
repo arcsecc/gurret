@@ -1,0 +1,62 @@
+#!/bin/bash
+
+DEST="/home/sivert/master/benchmarks/playground/$1"
+PREFIX=$1
+DESTINATION="/home/sivert/master/benchmarks/results/ea"
+
+
+START=1
+END=10
+
+TEMP="_temp_ea"
+
+
+function test_ea () {
+
+    tr '\0' '1' < /dev/zero | dd of=$TEMP bs=1 count=$1 status=none
+    F=$(cat $TEMP)
+
+    start="$(date +'%s.%N')"
+    DIS=$(sudo setfattr -n "user.temp" -v $F $2)
+    echo "$(date +"%s.%N - ${start}" | bc)" >> "$DESTINATION/$(echo $PREFIX)_write_$1"
+
+
+
+    # clear cache
+    sudo /sbin/sysctl -w vm.drop_caches=3 vm.drop_caches=3 > /dev/null
+
+    # Test reads
+    start="$(date +'%s.%N')"
+    DIS=$(sudo getfattr -n "user.temp" $2)
+    echo "0$(date +"%s.%N - ${start}" | bc)" >> "$DESTINATION/$(echo $PREFIX)_read_$1"
+
+    rm $TEMP
+}
+
+
+cd $DEST
+EA_FILE="ea_file"
+[ -f "$EA_FILE" ] && rm $EA_FILE
+[ -f "$TEMP" ] && rm $TEMP
+
+touch $EA_FILE
+
+
+for (( i=$START; i<=$END; i++ ))
+do
+    N=$((1 << $i))
+
+    for j in {1..30}
+    do
+        test_ea $N $EA_FILE
+    done
+done
+
+
+sudo rm $EA_FILE
+
+
+
+
+
+

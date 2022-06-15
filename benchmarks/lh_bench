@@ -1,0 +1,86 @@
+#!/bin/bash
+
+DEST="/home/sivert/dropbox_folder"
+
+NAME="_bench_file"
+
+
+PROG="fn main(){println!(\"true\");}"
+
+
+#EXECUTEPROG="fn main(){
+EXECPROG="fn main(){let file=\"/tmp/dropbox_folder/exec_file\"; std::process::Command::new(\"setfattr\").args([\"-n\", \"user.foo\", \"-v\", \"barerino\", file]).status().unwrap();}"
+
+PLOTNAME="Updating metadata"
+
+
+#if [ "$#" -ne 2 ]; then
+    #echo "Usage: ./lh_bench {START} {STOP}"
+#fi
+
+START=10
+STOP=10
+ITER=20
+
+
+# ~ clean up/start from scratch in case prev test failed or something ~
+
+
+function delete () {
+    sudo rm -rf metadata/*
+    for (( i=$START; i<=$STOP; i++ ))
+    do
+        rm -f "$NAME$i"
+    done
+}
+
+
+
+function create_metadata() {
+    TEMP_FOLDER="/tmp/dropbox_folder"
+    mkdir "$TEMP_FOLDER/metadata/$1"
+
+    for (( k=0; k<=$2; k++ ))
+    do
+
+        P="$TEMP_FOLDER/metadata/$1/dummy_$k"
+        mkdir $P
+        mkdir "$P/check"
+        mkdir "$P/execute"
+        touch "$P/check/main.rs"
+        echo $PROG > "$P/check/main.rs" 
+        echo $EXECPROG > "$P/execute/main.rs"
+    done
+
+}
+
+DESTINATION="/home/sivert/master/benchmarks/results/metadata"
+
+function test_metadata () {
+    start="$(date +'%s.%N')"
+    RES=$(cat $1)
+    # STORE_PATH="$DESTINATION/$(echo $FNAME)_metadata_$N"
+    #echo "0$(date +"%s.%N - ${start}" | bc)" >> "$DESTINATION/$(echo $3)_metadata_$2"
+}
+
+
+#touch test_file
+#create_metadata test_file 5
+#exit
+
+
+cd $DEST
+delete
+for (( i=$START; i<=$STOP; i++ ))
+do
+    #FILE="$NAME$i"
+    FILE="exec_file"
+    # create the file
+    #touch $FILE
+    create_metadata $FILE $i
+    for (( j=0; j<=$ITER; j++ ))
+    do
+        test_metadata $FILE $i "$PLOTNAME $i"
+    done
+done
+delete

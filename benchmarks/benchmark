@@ -1,0 +1,48 @@
+#!/bin/bash
+
+PREFIX=$1
+FOLDER=$2
+DESTINATION=$3
+
+if [ -z "$FOLDER" ]
+then
+    FOLDER="."
+fi
+
+
+function test_read_write () {
+    FILE="$(echo $FOLDER)/temp_$1"
+
+    # Test write here
+    RES=$(dd if=/dev/zero of=$FILE bs=1MB count=$1 |& awk '/copied/ {print $8}')
+    echo $RES >> "$DESTINATION/$(echo $PREFIX)_write_$1"
+
+    # clear cache
+    sudo /sbin/sysctl -w vm.drop_caches=3 vm.drop_caches=3 > /dev/null
+
+    # Test reads
+    RES=$(dd if=$FILE of=/dev/null bs=1MB count=$1 |& awk '/copied/ {print $8}')
+    echo $RES >> "$DESTINATION/$(echo $PREFIX)_read_$1"
+
+    rm $FILE
+}
+
+START=1
+END=10
+COUNT=5
+
+
+
+
+for (( i=$START; i<=$END; i++ ))
+do
+    N=$((1 << $i))
+
+    for j in {1..10}
+    do
+        test_read_write $N
+    done
+done
+
+
+

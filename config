@@ -1,0 +1,5 @@
+PATH=/home/sivert/dropbox_folder
+TARGET=/tmp/dropbox_folder
+FILE=/home/sivert/master/dropbox_file
+KEY=very secret key.
+IV=unique init vect

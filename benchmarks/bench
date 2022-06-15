@@ -1,0 +1,79 @@
+#!/bin/bash
+
+if [ "$#" -lt 1 ]; then
+    echo "Usage: ./bench {thing}"
+    echo "thing: rw | metadata"
+    exit
+fi
+
+case $1 in
+metadata)
+    sudo ./lh_bench
+;;
+
+rw)
+    echo "ext4"
+    sudo ./benchmark ext4 "./playground/ext4" "results/rw"
+    echo "xfs"
+    sudo ./benchmark xfs "./playground/xfs" "results/rw"
+    echo "btrfs"
+    sudo ./benchmark btrfs "./playground/btrfs" "results/rw"
+    echo "f2fs"
+    sudo ./benchmark f2fs "./playground/f2fs" "results/rw"
+;;
+
+rw2)
+    echo "ext4"
+    sudo ./benchmark2 ext4 "./playground/ext4" "results/rw2"
+    echo "xfs"
+    sudo ./benchmark2 xfs "./playground/xfs" "results/rw2"
+    echo "btrfs"
+    sudo ./benchmark2 btrfs "./playground/btrfs" "results/rw2"
+    echo "f2fs"
+    sudo ./benchmark2 f2fs "./playground/f2fs" "results/rw2"
+;;
+
+ea)
+    echo "ext4"
+    sudo ./ea_bench "ext4"
+    echo "xfs"
+    sudo ./ea_bench "xfs"
+    echo "btrfs"
+    sudo ./ea_bench "btrfs"
+    echo "f2fs"
+    sudo ./ea_bench "f2fs"
+;;
+
+
+ifc)
+    cat ~/dropbox_folder/file99
+
+
+    for i in {0..99}
+    do
+        start="$(date +'%s.%N')"
+        cat ~/dropbox_folder/file$i
+        for v in {0..30}
+        do
+            #MYNAME="${i}__$i"
+            #echo $MYNAME
+            MYNAME=$i
+
+            MYN=~/master/benchmarks/results/ifc/$MYNAME
+            echo "$(date +"%s.%N - ${start}" | bc)" >> $MYN
+        done
+    done
+
+
+;;
+
+fuse)
+    echo "fuse"
+    sudo ./benchmark passthrough-2 "playground/fuse" "results/fuse"
+    #echo "normal"
+    #sudo ./benchmark normal "./playground/normal" "results/fuse"
+;;
+    *)
+        echo "unknown"
+        ;;
+esac
