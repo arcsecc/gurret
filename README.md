@@ -1,3 +1,7 @@
+Master Thesis Work by Sivert Johansen
+Thesis link: TODO
+
+
 # Requirements:
 * fuse: `sudo apt-get install fuse`
 * rust: See [rustup](https://rustup.rs/)
