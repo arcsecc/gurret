@@ -1,6 +1,6 @@
-Master Thesis Work by Sivert Johansen
+Thesis - Gurret: Decentralized data management using subscription-based file attribute propagation
 
-Thesis link: TODO
+Master Thesis work by Sivert Johansen
 
 
 # Requirements:
